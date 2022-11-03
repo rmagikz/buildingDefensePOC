@@ -33,9 +33,16 @@ public class Window : MonoBehaviour
                 GameObject tracerInstance = Instantiate(tracer, spawnPoint, Quaternion.LookRotation(direction));
                 tracerInstance.transform.localScale = new Vector3(0.005f, 1, distance / 10f);
                 Destroy(tracerInstance, 0.1f);
-                Instantiate(pewman.groundImpact, hit.point, Quaternion.identity);
-                if (hit.transform.tag == "Enemy")
-                    Destroy(hit.transform.gameObject, 0.1f);
+                AudioManager.instance.PlayOneShot(AudioManager.instance.gunshotSound);
+                if (hit.transform.tag == "Enemy") {
+                    hit.transform.gameObject.GetComponent<Enemy>().TakeDamage(5);
+                    Instantiate(pewman.enemyImpact, hit.point, Quaternion.identity);
+                    AudioManager.instance.PlayOneShot(AudioManager.instance.enemyImpactSound);
+                }
+                else {
+                    Instantiate(pewman.groundImpact, hit.point, Quaternion.identity);
+                    AudioManager.instance.PlayOneShot(AudioManager.instance.gunshotSound);
+                }
             }
             return true;
         }

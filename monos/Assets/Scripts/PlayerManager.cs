@@ -22,12 +22,12 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        if (!playerMovementEnabled) return;
-        if (Input.GetKey(KeyCode.A)) keyAheld?.Invoke();
-        if (Input.GetKey(KeyCode.D)) keyDheld?.Invoke();
         if (Input.GetKeyDown(KeyCode.Q)) keyQpressed?.Invoke();
         if (Input.GetKeyDown(KeyCode.E)) keyEpressed?.Invoke();
         if (Input.GetKeyDown(KeyCode.Escape)) keyEscapePressed?.Invoke();
+        if (!playerMovementEnabled) return;
+        if (Input.GetKey(KeyCode.A)) keyAheld?.Invoke();
+        if (Input.GetKey(KeyCode.D)) keyDheld?.Invoke();
         if (Input.GetKey(KeyCode.Mouse0)) mouse0held?.Invoke();
     }
 

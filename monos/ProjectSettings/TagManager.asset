@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerBuilding
   - Floor2Room1
+  - Enemy
   layers:
   - Default
   - TransparentFX

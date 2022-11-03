@@ -12,6 +12,7 @@ public class PewPewManager : MonoBehaviour
 
     public GameObject tracer;
     public ParticleSystem groundImpact;
+    public ParticleSystem enemyImpact;
     public static float fireRate = 2f;
     public float soldierDelay = 0.5f;
     public float soldierReady = 0f;
