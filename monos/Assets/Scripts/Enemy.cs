@@ -18,9 +18,11 @@ public class Enemy : MonoBehaviour
         float theta = Random.Range(0f, Mathf.PI*2);
         float x = radius * Mathf.Cos(theta);
         float y = radius * Mathf.Sin(theta);
+
         transform.position = new Vector3(x, 0, y);
+        
         gameObject.transform.LookAt(targetPosition);
-        gameObject.transform.DOMove(targetPosition, 10f);
+        gameObject.transform.DOMove(targetPosition, 20f);
     }
 
     public void Destroy() {
