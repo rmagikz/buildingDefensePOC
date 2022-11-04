@@ -6,15 +6,13 @@ public class EnemyManager : MonoBehaviour
 {
     [SerializeField] private ObjectPool enemyPool;
 
-    void Start()
-    {
-        StartCoroutine(SpawnEnemies(2f));
-    }
+    public float spawnInterval = 1f;
+    private float timeSinceSpawn = 0f;
 
-    private IEnumerator SpawnEnemies(float interval) {
-        while (true) {
-        enemyPool.Spawn();
-        yield return new WaitForSeconds(interval);
+    void Update() {
+        if (Time.time > timeSinceSpawn) {
+            enemyPool.Spawn();
+            timeSinceSpawn = Time.time + spawnInterval;
         }
     }
 }

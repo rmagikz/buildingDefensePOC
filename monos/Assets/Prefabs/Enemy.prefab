@@ -1142,7 +1142,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentPool: {fileID: 0}
-  health: 10
+  health: 25
+  targetedCount: 0
 --- !u!1 &4157829449913900416
 GameObject:
   m_ObjectHideFlags: 0

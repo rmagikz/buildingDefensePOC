@@ -18,6 +18,8 @@ public class CameraManager : MonoBehaviour
     private Vector3 bezierLeft = new Vector3(8,0,0);
     private Vector3 bezierRight = new Vector3(-8,0,0);
 
+    private Coroutine rotateAroundCoroutine;
+
     void Start()
     {
         PlayerManager.keyAheld += () => cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), 0.3f);
@@ -25,6 +27,9 @@ public class CameraManager : MonoBehaviour
         PlayerManager.keyQpressed += () => LookAtRoom(1);
         PlayerManager.keyEpressed += () => LookAtRoom(2);
         PlayerManager.keyEscapePressed += () => LookAtBuilding();
+
+        PlayerManager.touchSwipe += (d,t) => rotateAroundCoroutine = StartCoroutine(RotateAround(d, t));
+        PlayerManager.touchUp += HandleTouchUp;
     }
 
     
@@ -33,7 +38,6 @@ public class CameraManager : MonoBehaviour
         if (!PlayerManager.playerMovementEnabled) return;
         cmCamera.transform.LookAt(building.transform);
     }
-
 
     public void LookAtRoom(int index) 
     {
@@ -48,7 +52,7 @@ public class CameraManager : MonoBehaviour
         currentRoom = target;
 
         float moveDirection = cmCamera.WorldToViewportPoint(target.lookAt.position).x > 0.5f ? -0.15f : 0.15f;
-        cmCamera.transform.DOLookAt(target.lookAt.position, 0.2f).OnComplete(() => StartCoroutine(FindRoom(target, moveDirection)));
+        cmCamera.transform.DOLookAt(target.lookAt.position, 0.2f).OnComplete(() => FindRoom(target, moveDirection));
         target.ToggleWall();
     }
 
@@ -69,6 +73,22 @@ public class CameraManager : MonoBehaviour
             GetCurve(out Vector3 result, p0, p1, p2, t);
             cmCamera.transform.position = result;
         }).OnComplete(() => PlayerManager.playerMovementEnabled = true);
+    }
+
+    private IEnumerator RotateAround(SwipeDirection direction, float distance) {
+        float sensitivity = 0.3f * distance/100f;
+        float incrementDirection = direction == SwipeDirection.LEFT ? -sensitivity : sensitivity;
+        for (int i = 0; i < 60; i++) {
+            cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), incrementDirection/60f);
+            yield return new WaitForSeconds(Time.deltaTime);
+        }
+    }
+
+    private void HandleTouchUp(bool b, Vector3 v) {
+        if (rotateAroundCoroutine != null) {
+            StopCoroutine(rotateAroundCoroutine);
+            rotateAroundCoroutine = null;
+        }
     }
 
     private void GetCurve(out Vector3 result, Vector3 p0, Vector3 p1, Vector3 p2, float time) 
@@ -103,7 +123,7 @@ public class CameraManager : MonoBehaviour
         Instantiate(primitive, p2 , Quaternion.identity);
     }
 
-    private IEnumerator FindRoom(Room target, float moveDirection) 
+    private void FindRoom(Room target, float moveDirection) 
     {
         while (true) 
         {
@@ -113,7 +133,6 @@ public class CameraManager : MonoBehaviour
             {
                 if (hit.transform == target.lookAt) break;
             }
-            yield return new WaitForEndOfFrame();
         }
         cmCamera.transform.DOMove(target.targetPos.position, 1f);
         cmCamera.transform.DODynamicLookAt(target.lookAt.position, 1f);
