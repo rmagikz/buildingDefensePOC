@@ -14,9 +14,13 @@ public class PewPewManager : MonoBehaviour
     public GameObject tracer;
     public ParticleSystem groundImpact;
     public ParticleSystem enemyImpact;
-    public static float fireRate = 5f;
-    public float soldierDelay = 5f;
-    public float soldierReady = 0f;
+    public float windowFireRate = 1f;
+    public float targetAcquisitionDelay = 5f;
+    public float firingQueueDelay = 0.5f;
+    private float timeSinceTargetAcquired = 0f;
+    private float timeSinceFiringQueue = 0f;
+
+    public Queue<Window> firingQueue = new Queue<Window>();
 
     void Start()
     {
@@ -29,43 +33,49 @@ public class PewPewManager : MonoBehaviour
     }
 
     void Update() {
-        if (Time.time > soldierReady) 
+        if (Time.time > timeSinceTargetAcquired) 
         {
-            FindTarget();
-            soldierReady = Time.time + soldierDelay;
+            AsssignTargets();
+            timeSinceTargetAcquired = Time.time + targetAcquisitionDelay;
+        }
+
+        if (Time.time > timeSinceFiringQueue)
+        {
+            if(firingQueue.TryDequeue(out Window window)) {
+                window.Shoot();
+                window.inQueue = false;
+                window.Reload();
+                timeSinceFiringQueue = Time.time + firingQueueDelay;
+            }
         }
     }
 
-    private void FindTarget() 
-    {
+    private void AsssignTargets() {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        Transform nearestWindow = null;
         GameObject nearestTarget = null;
 
         float lowestDistance = Mathf.Infinity;
         float currentDistance = 0f;
 
-        for (int i = 0; i < enemies.Length; i++) {
-            currentDistance = Vector3.Distance(building.transform.position, enemies[i].transform.position);
-            if (currentDistance < lowestDistance && enemies[i].GetComponent<Enemy>().targetedCount < 2) {
-                lowestDistance = currentDistance;
-                nearestTarget = enemies[i];
-            }
-        }
-
-        if (nearestTarget == null) return;
-
-        lowestDistance = Mathf.Infinity;
-
         for (int i = 0; i < windows.Length; i++) {
-            currentDistance = Vector3.Distance(windows[i].position, nearestTarget.transform.position);
-            if (currentDistance < lowestDistance && windows[i].GetComponent<Window>().canShoot) {
-                lowestDistance = currentDistance;
-                nearestWindow = windows[i];
+            for (int j = 0; j < enemies.Length; j++) {
+                currentDistance = Vector3.Distance(windows[i].position, enemies[j].transform.position);
+                if (currentDistance < lowestDistance) {
+                    if (Physics.Raycast(windows[i].position, enemies[j].transform.position + new Vector3(0,1,0) - windows[i].position, out RaycastHit hit)) {
+                        //Debug.Log(hit.transform.name);
+                        if (hit.transform.tag == "Enemy" && enemies[j].GetComponent<Enemy>().targetedCount < 1) {
+                            lowestDistance = currentDistance;
+                            nearestTarget = enemies[j];
+                        }
+                    }
+                }
             }
-        }
 
-        if (nearestWindow != null) nearestWindow.GetComponent<Window>().SetTarget(nearestTarget);
+            if (nearestTarget != null) windows[i].GetComponent<Window>().SetTarget(nearestTarget);
+        }
+    }
+
+    public void EnterQueue(Window window) {
+        firingQueue.Enqueue(window);
     }
 }
