@@ -20,12 +20,13 @@ public class CameraManager : MonoBehaviour
 
     private Coroutine rotateAroundCoroutine;
 
+    public static event Action<Room> roomReached;
+    public static event Action buildingReached;
+
     void Start()
     {
         PlayerManager.keyAheld += () => cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), 0.3f);
         PlayerManager.keyDheld += () => cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), -0.3f);
-        PlayerManager.keyQpressed += () => LookAtRoom(1);
-        PlayerManager.keyEpressed += () => LookAtRoom(2);
         PlayerManager.keyEscapePressed += () => LookAtBuilding();
 
         PlayerManager.touchSwipe += (d,t) => rotateAroundCoroutine = StartCoroutine(RotateAround(d, t));
@@ -39,40 +40,39 @@ public class CameraManager : MonoBehaviour
         cmCamera.transform.LookAt(building.transform);
     }
 
-    public void LookAtRoom(int index) 
+    public void LookAtRoom(Room room) 
     {
         PlayerManager.playerMovementEnabled = false;
 
         if (currentRoom != null) currentRoom.ToggleWall();
         else previousCameraPosition = cmCamera.transform.position;
 
-        Room target = Array.Find(GameObject.FindObjectsOfType<Room>(), room => room.index == index);
-        if (target == null) return;
+        currentRoom = room;
 
-        currentRoom = target;
-
-        float moveDirection = cmCamera.WorldToViewportPoint(target.lookAt.position).x > 0.5f ? -0.15f : 0.15f;
-        cmCamera.transform.DOLookAt(target.lookAt.position, 0.2f).OnComplete(() => FindRoom(target, moveDirection));
-        target.ToggleWall();
+        float moveDirection = cmCamera.WorldToViewportPoint(room.lookAt.position).x > 0.5f ? -0.15f : 0.15f;
+        cmCamera.transform.DOLookAt(room.lookAt.position, 0.2f).OnComplete(() => FindRoom(room, moveDirection));
+        room.ToggleWall();
     }
 
     public void LookAtBuilding() 
     {
         if (currentRoom != null) currentRoom.ToggleWall();
+        else return;
         currentRoom = null;
 
         Vector3 p0 = cmCamera.transform.position;
         Vector3 p2 = previousCameraPosition;
         Vector3 p1 = GetDesiredVector(p0,p2);
 
-        //DisplayBezier(p0, p1, p2);
-
         float t = 0;
         cmCamera.transform.DODynamicLookAt(building.transform.position, 2f).OnUpdate(() => {
             t += Time.deltaTime/2f;
             GetCurve(out Vector3 result, p0, p1, p2, t);
             cmCamera.transform.position = result;
-        }).OnComplete(() => PlayerManager.playerMovementEnabled = true);
+        }).OnComplete(() => {
+            PlayerManager.playerMovementEnabled = true;
+            buildingReached?.Invoke();
+        });
     }
 
     private IEnumerator RotateAround(SwipeDirection direction, float distance) {
@@ -134,7 +134,7 @@ public class CameraManager : MonoBehaviour
                 if (hit.transform == target.lookAt) break;
             }
         }
-        cmCamera.transform.DOMove(target.targetPos.position, 1f);
+        cmCamera.transform.DOMove(target.targetPos.position, 1f).OnComplete(() => roomReached?.Invoke(target));
         cmCamera.transform.DODynamicLookAt(target.lookAt.position, 1f);
     }
 }
