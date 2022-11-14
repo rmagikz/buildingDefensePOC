@@ -12,11 +12,11 @@ public class Enemy : MonoBehaviour
 
     private Vector3 targetPosition;
 
-    void Start() {
+    virtual protected void Start() {
         targetPosition = GameObject.FindGameObjectWithTag("PlayerBuilding").transform.position;
     }
 
-    void OnEnable() {
+    virtual protected void OnEnable() {
         health = 10;
         targetedCount = 0;
 
@@ -27,16 +27,19 @@ public class Enemy : MonoBehaviour
 
         transform.position = new Vector3(x, 0, y);
 
-        gameObject.transform.LookAt(targetPosition);
-        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, targetPosition, 0.3f);
+        transform.LookAt(targetPosition);
     }
 
-    public void Destroy() {
+    virtual protected void Update() {
+        transform.position = Vector3.MoveTowards(gameObject.transform.position, targetPosition, 2 * Time.deltaTime);
+    }
+
+    virtual public void Destroy() {
         if (parentPool) parentPool.Remove(gameObject);
         else Destroy(gameObject);
     }
 
-    public bool TakeDamage(float damage) {
+    virtual public bool TakeDamage(float damage) {
         health -= damage;
         if (health <= 0) {Destroy(); return true;}
         return false;

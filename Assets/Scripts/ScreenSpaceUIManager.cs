@@ -21,6 +21,7 @@ public class ScreenSpaceUIManager : MonoBehaviour
     }
     
     public void Toggle() {
+        //gameObject.SetActive(true);
         if (panelEnabled) {
             panelEnabled = false;
             backButton.transform.DOScale(new Vector3(0,0,0), 0.5f);

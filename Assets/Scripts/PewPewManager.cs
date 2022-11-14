@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class PewPewManager : MonoBehaviour
 {
@@ -52,18 +53,19 @@ public class PewPewManager : MonoBehaviour
 
     private void AsssignTargets() {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        GameObject nearestTarget = null;
-
-        float lowestDistance = Mathf.Infinity;
-        float currentDistance = 0f;
 
         for (int i = 0; i < windows.Length; i++) {
+            float lowestDistance = Mathf.Infinity;
+            float currentDistance = 0f;
+            GameObject nearestTarget = null;
+
             for (int j = 0; j < enemies.Length; j++) {
+                if (enemies[j].GetComponent<Enemy>().targetedCount > 1) continue;
                 currentDistance = Vector3.Distance(windows[i].position, enemies[j].transform.position);
+                
                 if (currentDistance < lowestDistance) {
                     if (Physics.Raycast(windows[i].position, enemies[j].transform.position + new Vector3(0,1,0) - windows[i].position, out RaycastHit hit)) {
-                        //Debug.Log(hit.transform.name);
-                        if (hit.transform.tag == "Enemy" && enemies[j].GetComponent<Enemy>().targetedCount < 1) {
+                        if (hit.transform.tag == "Enemy") {
                             lowestDistance = currentDistance;
                             nearestTarget = enemies[j];
                         }
@@ -71,7 +73,9 @@ public class PewPewManager : MonoBehaviour
                 }
             }
 
-            if (nearestTarget != null) windows[i].GetComponent<Window>().SetTarget(nearestTarget);
+            if (nearestTarget != null && windows[i].GetComponent<Window>().SetTarget(nearestTarget)) {
+                nearestTarget.GetComponent<Enemy>().targetedCount++;
+            }
         }
     }
 

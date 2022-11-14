@@ -26,7 +26,7 @@ public class Window : MonoBehaviour
     public bool SetTarget(GameObject _target, bool priority = false) {
         if (currentTarget != null && priority == false) return false;
         currentTarget = _target;
-        currentTarget.GetComponent<Enemy>().targetedCount++;
+        //currentTarget.GetComponent<Enemy>().targetedCount++;
         return true;
     }
 
@@ -41,13 +41,16 @@ public class Window : MonoBehaviour
 
     public void Shoot() 
     {
-        if (currentTarget == null) return;
+        Debug.Log("SHOOTING");
+        if (currentTarget == null) {Debug.Log("RETURNED CUZ NO TARGET"); return;}
+
         Vector3 target = currentTarget.transform.position + new Vector3(0,1,0);
-        
         Vector3 direction = (target - transform.position).normalized;
+
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit)) 
         {
-            if (hit.transform.tag != "Enemy") {currentTarget = null; return;}
+            Debug.DrawLine(transform.position, target, Color.blue, 5f);
+            if (hit.transform.tag != "Enemy") {currentTarget = null; Debug.Log("RETURNING CUZ NO TARGET 2"); return;}
             float distance = Vector3.Distance(transform.position, target);
             Vector3 spawnPoint = transform.position + direction * distance * 0.5f;
             GameObject tracerInstance = Instantiate(pewman.tracer, spawnPoint, Quaternion.LookRotation(direction));

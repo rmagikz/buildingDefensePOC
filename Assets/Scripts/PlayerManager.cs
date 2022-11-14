@@ -15,9 +15,9 @@ public class PlayerManager : MonoBehaviour
 
     public static event Action mouse0held;
 
-    public static event Action<SwipeDirection, float> touchSwipe;
+    public static event Action<Touch> touchSwipe;
     public static event Action touchDown;
-    public static event Action<bool, Vector3> touchUp;
+    public static event Action<Touch> touchUp;
     public static event Action touchMoving;
 
     public static bool playerMovementEnabled = true;
@@ -41,43 +41,15 @@ public class PlayerManager : MonoBehaviour
             Touch touch = Input.GetTouch(0);
             if (touch.phase == TouchPhase.Began)
             {
-                wasSwiping = false;
-                fp = touch.position;
-                lp = touch.position;
                 touchDown?.Invoke();
             }
             else if (touch.phase == TouchPhase.Moved)
             {
-                lp = touch.position;
-                distanceDragged = Vector3.Distance(fp, lp);
-                    wasSwiping = true;
-                    if (Mathf.Abs(lp.x - fp.x) > Mathf.Abs(lp.y - fp.y))
-                    {
-                        if (/*(lp.x > fp.x) && */(lp.x > dc.x))
-                        {
-                            touchSwipe?.Invoke(SwipeDirection.RIGHT, distanceDragged);
-                        }
-                        else
-                        {
-                            touchSwipe?.Invoke(SwipeDirection.LEFT, distanceDragged);
-                        }
-                    }
-                    else
-                    {
-                        if (/*(lp.y > fp.y) &&*/ (lp.y > dc.y))
-                        {
-                            touchSwipe?.Invoke(SwipeDirection.UP, distanceDragged);
-                        }
-                        else
-                        {
-                            touchSwipe?.Invoke(SwipeDirection.DOWN, distanceDragged);
-                        }
-                    }
-                dc = touch.position;
+                touchSwipe?.Invoke(touch);
             }
             else if (touch.phase == TouchPhase.Ended) 
             {
-                touchUp?.Invoke(wasSwiping, touch.position);
+                touchUp?.Invoke(touch);
             }
         }
 

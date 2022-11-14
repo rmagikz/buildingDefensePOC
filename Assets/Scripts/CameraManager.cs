@@ -29,8 +29,7 @@ public class CameraManager : MonoBehaviour
         PlayerManager.keyDheld += () => cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), -0.3f);
         PlayerManager.keyEscapePressed += () => LookAtBuilding();
 
-        PlayerManager.touchSwipe += (d,t) => rotateAroundCoroutine = StartCoroutine(RotateAround(d, t));
-        PlayerManager.touchUp += HandleTouchUp;
+        PlayerManager.touchSwipe += (touch) => StartCoroutine(RotateAround(touch));
     }
 
     
@@ -75,19 +74,12 @@ public class CameraManager : MonoBehaviour
         });
     }
 
-    private IEnumerator RotateAround(SwipeDirection direction, float distance) {
-        float sensitivity = 0.3f * distance/100f;
-        float incrementDirection = direction == SwipeDirection.LEFT ? -sensitivity : sensitivity;
+    private IEnumerator RotateAround(Touch touch) {
+        float deltaPos = touch.deltaPosition.x;
+        float sensitivity = deltaPos / (Screen.width/360);
         for (int i = 0; i < 60; i++) {
-            cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), incrementDirection/60f);
+            cmCamera.transform.RotateAround(building.transform.position, Vector3.up, sensitivity/60f);
             yield return new WaitForSeconds(Time.deltaTime);
-        }
-    }
-
-    private void HandleTouchUp(bool b, Vector3 v) {
-        if (rotateAroundCoroutine != null) {
-            StopCoroutine(rotateAroundCoroutine);
-            rotateAroundCoroutine = null;
         }
     }
 
