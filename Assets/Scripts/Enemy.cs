@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,12 +6,16 @@ using DG.Tweening;
 
 public class Enemy : MonoBehaviour
 {   
+    [SerializeField] GameObject spriteRenderer;
+
     public ObjectPool parentPool;
     public float health = 10;
 
     public int targetedCount = 0;
 
     private Vector3 targetPosition;
+
+    public event Action<Enemy> hasDied;
 
     virtual protected void Start() {
         targetPosition = GameObject.FindGameObjectWithTag("PlayerBuilding").transform.position;
@@ -19,9 +24,10 @@ public class Enemy : MonoBehaviour
     virtual protected void OnEnable() {
         health = 10;
         targetedCount = 0;
+        ShowAsPriority(false);
 
-        float radius = Random.Range(30f,40f);
-        float theta = Random.Range(0f, Mathf.PI*2);
+        float radius = UnityEngine.Random.Range(30f,40f);
+        float theta = UnityEngine.Random.Range(0f, Mathf.PI*2);
         float x = radius * Mathf.Cos(theta);
         float y = radius * Mathf.Sin(theta);
 
@@ -41,7 +47,11 @@ public class Enemy : MonoBehaviour
 
     virtual public bool TakeDamage(float damage) {
         health -= damage;
-        if (health <= 0) {Destroy(); return true;}
+        if (health <= 0) {Destroy(); hasDied?.Invoke(this); return true;}
         return false;
+    }
+
+    virtual public void ShowAsPriority(bool state) {
+        spriteRenderer.SetActive(state);
     }
 }

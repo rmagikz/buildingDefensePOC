@@ -16,7 +16,7 @@ public class PlayerManager : MonoBehaviour
     public static event Action mouse0held;
 
     public static event Action<Touch> touchSwipe;
-    public static event Action touchDown;
+    public static event Action<Touch> touchDown;
     public static event Action<Touch> touchUp;
     public static event Action touchMoving;
 
@@ -41,7 +41,7 @@ public class PlayerManager : MonoBehaviour
             Touch touch = Input.GetTouch(0);
             if (touch.phase == TouchPhase.Began)
             {
-                touchDown?.Invoke();
+                touchDown?.Invoke(touch);
             }
             else if (touch.phase == TouchPhase.Moved)
             {

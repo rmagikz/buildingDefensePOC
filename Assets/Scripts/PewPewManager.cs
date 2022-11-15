@@ -16,70 +16,65 @@ public class PewPewManager : MonoBehaviour
     public ParticleSystem groundImpact;
     public ParticleSystem enemyImpact;
     public float windowFireRate = 1f;
-    public float targetAcquisitionDelay = 5f;
     public float firingQueueDelay = 0.5f;
-    private float timeSinceTargetAcquired = 0f;
     private float timeSinceFiringQueue = 0f;
 
-    public Queue<Window> firingQueue = new Queue<Window>();
+    public List<GameObject> enemies;
+
+    public List<Window> firingQueue = new List<Window>();
 
     void Start()
     {
-        windows = new Transform[windowsParent.transform.childCount];
-        for (int i = 0; i < windowsParent.transform.childCount; i++) 
+        int windowsCount = windowsParent.transform.childCount;
+        windows = new Transform[windowsCount];
+        for (int i = 0; i < windowsCount; i++) 
         {
             windows[i] = windowsParent.transform.GetChild(i);
             windows[i].gameObject.AddComponent<Window>();
         }
+
+        PlayerManager.touchDown += HandleTouchDown;
     }
 
     void Update() {
-        if (Time.time > timeSinceTargetAcquired) 
-        {
-            AsssignTargets();
-            timeSinceTargetAcquired = Time.time + targetAcquisitionDelay;
-        }
+        enemies = GameObject.FindGameObjectsWithTag("Enemy").ToList();
 
         if (Time.time > timeSinceFiringQueue)
         {
-            if(firingQueue.TryDequeue(out Window window)) {
-                window.Shoot();
-                window.inQueue = false;
-                window.Reload();
-                timeSinceFiringQueue = Time.time + firingQueueDelay;
+            float lowestDistance = Mathf.Infinity;
+            float currentDistance = -1f;
+            Window nearestWindow = null;
+
+            for (int i = 0; i < firingQueue.Count; i++) {
+                if (firingQueue[i].targetDistance < lowestDistance) {
+                    currentDistance = firingQueue[i].targetDistance;
+                    nearestWindow = firingQueue[i];
+                }
             }
+
+            if (nearestWindow != null) {
+                nearestWindow.Shoot();
+                firingQueue.Remove(nearestWindow);
+            }
+
+            timeSinceFiringQueue = Time.time + firingQueueDelay;
         }
     }
 
-    private void AsssignTargets() {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        for (int i = 0; i < windows.Length; i++) {
-            float lowestDistance = Mathf.Infinity;
-            float currentDistance = 0f;
-            GameObject nearestTarget = null;
-
-            for (int j = 0; j < enemies.Length; j++) {
-                if (enemies[j].GetComponent<Enemy>().targetedCount > 1) continue;
-                currentDistance = Vector3.Distance(windows[i].position, enemies[j].transform.position);
-                
-                if (currentDistance < lowestDistance) {
-                    if (Physics.Raycast(windows[i].position, enemies[j].transform.position + new Vector3(0,1,0) - windows[i].position, out RaycastHit hit)) {
-                        if (hit.transform.tag == "Enemy") {
-                            lowestDistance = currentDistance;
-                            nearestTarget = enemies[j];
+    private void HandleTouchDown(Touch touch) {
+        Vector3 direction = cmCamera.ScreenPointToRay(touch.position).direction;
+        if (Physics.Raycast(cmCamera.gameObject.transform.position, direction, out RaycastHit hit)) {
+            if (hit.transform.tag == "Enemy") {
+                hit.transform.GetComponent<Enemy>().ShowAsPriority(true);
+                firingQueue = new List<Window>();
+                for (int i = 0; i < windows.Count(); i++) {
+                    if (Physics.Raycast(windows[i].position, hit.transform.position + new Vector3(0,1,0) - windows[i].position, out RaycastHit hit2)) {
+                        if (hit2.transform.tag == "Enemy") {
+                            windows[i].GetComponent<Window>().SetPriorityTarget(hit.transform.gameObject);
                         }
                     }
                 }
             }
-
-            if (nearestTarget != null && windows[i].GetComponent<Window>().SetTarget(nearestTarget)) {
-                nearestTarget.GetComponent<Enemy>().targetedCount++;
-            }
         }
-    }
-
-    public void EnterQueue(Window window) {
-        firingQueue.Enqueue(window);
     }
 }
