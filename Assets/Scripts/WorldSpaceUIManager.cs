@@ -9,7 +9,7 @@ public class WorldSpaceUIManager : MonoBehaviour
     [SerializeField] private Button barracks, logistics, engineering, misc;
     [SerializeField] private CameraManager cameraManager;
     [SerializeField] private BuildingManager buildingManager;
-    [SerializeField] private ScreenSpaceUIManager screenSpaceUIManager;
+    [SerializeField] private UpgradeUIManager upgradeUIManager;
 
     private bool buttonsEnabled = true;
 
@@ -18,6 +18,8 @@ public class WorldSpaceUIManager : MonoBehaviour
         logistics.onClick.AddListener(LogisticsClicked);
         engineering.onClick.AddListener(EngineeringClicked);
         misc.onClick.AddListener(MiscClicked);
+
+        ToggleAll();
     }
 
     public void Toggle(Button p) {
@@ -41,27 +43,27 @@ public class WorldSpaceUIManager : MonoBehaviour
         cameraManager.LookAtRoom(buildingManager.barracks);
         //Toggle(barracks);
         ToggleAll();
-        screenSpaceUIManager.Toggle();
+        upgradeUIManager.Toggle();
     }
 
     private void LogisticsClicked() {
         cameraManager.LookAtRoom(buildingManager.logistics);
         //Toggle(logistics);
         ToggleAll();
-        screenSpaceUIManager.Toggle();
+        upgradeUIManager.Toggle();
     }
 
     private void EngineeringClicked() {
         cameraManager.LookAtRoom(buildingManager.engineering);
         //Toggle(engineering);
         ToggleAll();
-        screenSpaceUIManager.Toggle();
+        upgradeUIManager.Toggle();
     }
 
     private void MiscClicked() {
         cameraManager.LookAtRoom(buildingManager.misc);
         //Toggle(misc);
         ToggleAll();
-        screenSpaceUIManager.Toggle();
+        upgradeUIManager.Toggle();
     }
 }

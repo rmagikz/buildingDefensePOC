@@ -20,7 +20,8 @@ public class PlayerManager : MonoBehaviour
     public static event Action<Touch> touchUp;
     public static event Action touchMoving;
 
-    public static bool playerMovementEnabled = true;
+    public static bool playerMovementEnabled = false;
+    public static bool waveInProgress = false;
 
     private Vector3 fp;   //First touch position
     private Vector3 lp;   //Last touch position
@@ -36,6 +37,7 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
+        if (!playerMovementEnabled) return;
         if (Input.touchCount == 1) // GET TOUCH INPUT!!!!
         {
             Touch touch = Input.GetTouch(0);
@@ -52,14 +54,6 @@ public class PlayerManager : MonoBehaviour
                 touchUp?.Invoke(touch);
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.Q)) keyQpressed?.Invoke();
-        if (Input.GetKeyDown(KeyCode.E)) keyEpressed?.Invoke();
-        if (Input.GetKeyDown(KeyCode.Escape)) keyEscapePressed?.Invoke();
-        if (!playerMovementEnabled) return;
-        if (Input.GetKey(KeyCode.A)) keyAheld?.Invoke();
-        if (Input.GetKey(KeyCode.D)) keyDheld?.Invoke();
-        if (Input.GetKey(KeyCode.Mouse0)) mouse0held?.Invoke();
     }
 
 

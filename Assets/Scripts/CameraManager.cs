@@ -35,7 +35,6 @@ public class CameraManager : MonoBehaviour
     
     void Update()
     {
-        if (!PlayerManager.playerMovementEnabled) return;
         cmCamera.transform.LookAt(building.transform);
     }
 

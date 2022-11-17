@@ -37,6 +37,11 @@ public class PewPewManager : MonoBehaviour
     }
 
     void Update() {
+        if (!PlayerManager.waveInProgress) return;
+        ShootTargets();
+    }
+
+    private void ShootTargets() {
         enemies = GameObject.FindGameObjectsWithTag("Enemy").ToList();
 
         if (Time.time > timeSinceFiringQueue)
