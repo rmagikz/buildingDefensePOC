@@ -41,33 +41,30 @@ public class WorldSpaceUIManager : MonoBehaviour
     }
 
     private void BarracksClicked() {
-        cameraManager.LookAtRoom(buildingManager.barracks);
+        cameraManager.LookAtRoom(buildingManager.barracks, () => upgradeUIManager.Toggle());
         //Toggle(barracks);
-        ToggleAll();
-        upgradeUIManager.Toggle();
         mainUI.Toggle();
+        ToggleAll();
     }
 
     private void LogisticsClicked() {
-        cameraManager.LookAtRoom(buildingManager.logistics);
+        cameraManager.LookAtRoom(buildingManager.logistics, () => upgradeUIManager.Toggle());
         //Toggle(logistics);
-        ToggleAll();
-        upgradeUIManager.Toggle();
         mainUI.Toggle();
+        ToggleAll();
     }
 
     private void EngineeringClicked() {
-        cameraManager.LookAtRoom(buildingManager.engineering);
+        cameraManager.LookAtRoom(buildingManager.engineering, () => upgradeUIManager.Toggle());
         //Toggle(engineering);
-        ToggleAll();
-        upgradeUIManager.Toggle();
         mainUI.Toggle();
+        ToggleAll();
     }
 
     private void MiscClicked() {
-        cameraManager.LookAtRoom(buildingManager.misc);
+        cameraManager.LookAtRoom(buildingManager.misc, () => upgradeUIManager.Toggle());
         //Toggle(misc);
+        mainUI.Toggle();
         ToggleAll();
-        upgradeUIManager.Toggle();
     }
 }

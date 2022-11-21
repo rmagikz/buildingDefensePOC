@@ -15,10 +15,11 @@ public class CameraManager : MonoBehaviour
     private Vector3 previousCameraPosition;
     private Room currentRoom = null;
 
-    private Vector3 bezierLeft = new Vector3(8,0,0);
-    private Vector3 bezierRight = new Vector3(-8,0,0);
-
     private Coroutine rotateAroundCoroutine;
+
+    private GameObject anchor1, anchor2;
+
+    public Material materialRed;
 
     public static event Action<Room> roomReached;
     public static event Action buildingReached;
@@ -31,10 +32,11 @@ public class CameraManager : MonoBehaviour
     
     void Update()
     {
-        cmCamera.transform.LookAt(building.transform);
+        if (GameManager.playerMovementEnabled)
+            cmCamera.transform.LookAt(building.transform);
     }
 
-    public void LookAtRoom(Room room) 
+    public void LookAtRoom(Room room, Action OnComplete) 
     {
         GameManager.SetPlayerMovement(false);
 
@@ -43,8 +45,7 @@ public class CameraManager : MonoBehaviour
 
         currentRoom = room;
 
-        float moveDirection = cmCamera.WorldToViewportPoint(room.lookAt.position).x > 0.5f ? -0.15f : 0.15f;
-        cmCamera.transform.DOLookAt(room.lookAt.position, 0.2f).OnComplete(() => FindRoom(room, moveDirection));
+        StartCoroutine(BezierMove(room.targetPos.position, room.lookAt.position, building.transform.position, () => OnComplete?.Invoke()));
         room.ToggleWall();
     }
 
@@ -52,21 +53,9 @@ public class CameraManager : MonoBehaviour
     {
         if (currentRoom != null) currentRoom.ToggleWall();
         else return;
+
+        StartCoroutine(BezierMove(previousCameraPosition, building.transform.position, currentRoom.lookAt.position, () => GameManager.SetPlayerMovement(true)));
         currentRoom = null;
-
-        Vector3 p0 = cmCamera.transform.position;
-        Vector3 p2 = previousCameraPosition;
-        Vector3 p1 = GetDesiredVector(p0,p2);
-
-        float t = 0;
-        cmCamera.transform.DODynamicLookAt(building.transform.position, 2f).OnUpdate(() => {
-            t += Time.deltaTime/2f;
-            GetCurve(out Vector3 result, p0, p1, p2, t);
-            cmCamera.transform.position = result;
-        }).OnComplete(() => {
-            GameManager.SetPlayerMovement(true);
-            buildingReached?.Invoke();
-        });
     }
 
     private IEnumerator RotateAround(Touch touch) {
@@ -89,39 +78,36 @@ public class CameraManager : MonoBehaviour
         result += tt * p2;
     }
 
-    private Vector3 GetDesiredVector(Vector3 p0, Vector3 p2) 
-    {
-        float distanceToLeft = Vector3.Distance(p0, bezierLeft);
-        float distanceToRight = Vector3.Distance(p0, bezierRight);
-
-        Vector3 desiredPosition = distanceToLeft < distanceToRight ? bezierLeft : bezierRight;
-        return new Vector3 (
-            desiredPosition.x,
-            p2.y - (p2.y - p0.y)/2,
-            desiredPosition.y
-        );
-    }
-
-    private void DisplayBezier(Vector3 p0, Vector3 p1, Vector3 p2) 
+    private void DisplayBezier(Vector3 p0, Vector3 p1, Vector3 p2) // utility function to display bezier points
     {
         GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Cube);
         Instantiate(primitive, p0 , Quaternion.identity);
-        Instantiate(primitive, p1 , Quaternion.identity);
+        Instantiate(primitive, p1 , Quaternion.identity).GetComponent<MeshRenderer>().material = materialRed;
         Instantiate(primitive, p2 , Quaternion.identity);
+        Destroy(primitive);
     }
 
-    private void FindRoom(Room target, float moveDirection) 
-    {
-        while (true) 
-        {
-            cmCamera.transform.RotateAround(building.transform.position, Vector3.up, moveDirection);
-            cmCamera.transform.LookAt(target.lookAt.position);
-            if (Physics.Raycast(cmCamera.transform.position, cmCamera.transform.forward, out RaycastHit hit, layermask)) 
-            {
-                if (hit.transform == target.lookAt) break;
+    private IEnumerator BezierMove(Vector3 targetPos, Vector3 lookAt, Vector3 fromLookAt, Action OnComplete) {
+        Vector3 p0 = cmCamera.transform.position;
+        Vector3 p2 = targetPos;
+        Vector3 p1 = (p0 + ((p2 - p0) / 2));
+        p1.y -= Vector3.Distance(p0, p2)/4;
+
+        float t = 0;
+        while (true) {
+            t += Time.deltaTime;
+            GetCurve(out Vector3 result, p0, p1, p2, t);
+            cmCamera.transform.position = result;
+            Vector3 lookAtCorrected = t * lookAt + (1 - t) * fromLookAt;
+            cmCamera.transform.LookAt(lookAtCorrected);
+
+            if (t >= 1) {
+                cmCamera.transform.position = targetPos;
+                cmCamera.transform.LookAt(lookAt);
+                OnComplete?.Invoke();
+                yield break;
             }
+            yield return new WaitForSeconds(Time.deltaTime);
         }
-        cmCamera.transform.DOMove(target.targetPos.position, 1f).OnComplete(() => roomReached?.Invoke(target));
-        cmCamera.transform.DODynamicLookAt(target.lookAt.position, 1f);
     }
 }
