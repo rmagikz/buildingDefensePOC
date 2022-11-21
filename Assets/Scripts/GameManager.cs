@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] EnemyManager enemyManager;
     [SerializeField] MainUI mainUI;
     [SerializeField] WorldSpaceUIManager worldSpaceUIManager;
+    [SerializeField] PewPewManager pewManager;
 
     public static bool playerMovementEnabled {get; private set;}
     public static bool waveInProgress {get; private set;}

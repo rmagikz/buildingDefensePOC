@@ -7,8 +7,10 @@ using DG.Tweening;
 public class UpgradeUIManager : MonoBehaviour
 {
     [SerializeField] private WorldSpaceUIManager worldSpaceUIManager;
+    [SerializeField] private MainUI mainUI;
     [SerializeField] private CameraManager cameraManager;
     [SerializeField] private Button upgrade1, upgrade2, backButton;
+    [SerializeField] private GameObject roomTitle;
 
     private bool panelEnabled = true;
 
@@ -27,11 +29,13 @@ public class UpgradeUIManager : MonoBehaviour
             backButton.transform.DOScale(new Vector3(0,0,0), 0.5f);
             upgrade1.transform.DOScale(new Vector3(0,0,0), 0.5f);
             upgrade2.transform.DOScale(new Vector3(0,0,0), 0.5f);
+            roomTitle.transform.DOScale(new Vector3(0,0,0), 0.5f);
         } else {
             panelEnabled = true;
             backButton.transform.DOScale(new Vector3(1,1,1), 0.5f);
             upgrade1.transform.DOScale(new Vector3(1,1,1), 0.5f);
             upgrade2.transform.DOScale(new Vector3(1,1,1), 0.5f);
+            roomTitle.transform.DOScale(new Vector3(1,1,1), 0.5f);
         }
     }
 
@@ -39,6 +43,7 @@ public class UpgradeUIManager : MonoBehaviour
         Toggle();
         worldSpaceUIManager.ToggleAll();
         cameraManager.LookAtBuilding();
+        mainUI.Toggle();
     }
 
     private void Upgrade1Clicked() {

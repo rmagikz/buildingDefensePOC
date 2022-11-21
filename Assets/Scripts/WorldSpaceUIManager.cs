@@ -10,6 +10,7 @@ public class WorldSpaceUIManager : MonoBehaviour
     [SerializeField] private CameraManager cameraManager;
     [SerializeField] private BuildingManager buildingManager;
     [SerializeField] private UpgradeUIManager upgradeUIManager;
+    [SerializeField] private MainUI mainUI;
 
     private bool buttonsEnabled = true;
 
@@ -44,6 +45,7 @@ public class WorldSpaceUIManager : MonoBehaviour
         //Toggle(barracks);
         ToggleAll();
         upgradeUIManager.Toggle();
+        mainUI.Toggle();
     }
 
     private void LogisticsClicked() {
@@ -51,6 +53,7 @@ public class WorldSpaceUIManager : MonoBehaviour
         //Toggle(logistics);
         ToggleAll();
         upgradeUIManager.Toggle();
+        mainUI.Toggle();
     }
 
     private void EngineeringClicked() {
@@ -58,6 +61,7 @@ public class WorldSpaceUIManager : MonoBehaviour
         //Toggle(engineering);
         ToggleAll();
         upgradeUIManager.Toggle();
+        mainUI.Toggle();
     }
 
     private void MiscClicked() {
