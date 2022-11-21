@@ -33,11 +33,11 @@ public class PewPewManager : MonoBehaviour
             windows[i].gameObject.AddComponent<Window>();
         }
 
-        PlayerManager.touchDown += HandleTouchDown;
+        InputManager.touchDown += HandleTouchDown;
     }
 
     void Update() {
-        if (!PlayerManager.waveInProgress) return;
+        if (!GameManager.waveInProgress) return;
         ShootTargets();
     }
 

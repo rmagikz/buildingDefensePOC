@@ -23,7 +23,7 @@ public class TitleUI : MonoBehaviour
     }
 
     private void StartButtonClicked() {
-        PlayerManager.playerMovementEnabled = true;
+        GameManager.SetPlayerMovement(true);
         textTweener.Kill();
         tapAnywhereText.transform.DOScale(Vector3.zero, 0.5f);
         titleText.transform.DOScale(Vector3.zero, 0.5f).OnComplete(() => gameObject.SetActive(false));

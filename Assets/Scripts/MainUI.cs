@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -9,14 +10,11 @@ public class MainUI : MonoBehaviour
     [SerializeField] private WorldSpaceUIManager worldSpaceUIManager;
     [SerializeField] private Button waveButton;
 
+    public static event Action WaveStarted;
+
     void Start() {
         waveButton.onClick.AddListener(StartWave);
-
         Toggle();
-    }
-
-    void Update() {
-
     }
 
     public void Toggle() {
@@ -32,7 +30,7 @@ public class MainUI : MonoBehaviour
     private void StartWave() {
         Toggle();
         worldSpaceUIManager.ToggleAll();
-        PlayerManager.waveInProgress = true;
+        WaveStarted?.Invoke();
     }
 }
 

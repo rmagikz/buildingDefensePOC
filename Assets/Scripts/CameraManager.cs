@@ -25,11 +25,7 @@ public class CameraManager : MonoBehaviour
 
     void Start()
     {
-        PlayerManager.keyAheld += () => cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), 0.3f);
-        PlayerManager.keyDheld += () => cmCamera.gameObject.transform.RotateAround(building.transform.position, new Vector3(0,1,0), -0.3f);
-        PlayerManager.keyEscapePressed += () => LookAtBuilding();
-
-        PlayerManager.touchSwipe += (touch) => StartCoroutine(RotateAround(touch));
+        InputManager.touchSwipe += (touch) => StartCoroutine(RotateAround(touch));
     }
 
     
@@ -40,7 +36,7 @@ public class CameraManager : MonoBehaviour
 
     public void LookAtRoom(Room room) 
     {
-        PlayerManager.playerMovementEnabled = false;
+        GameManager.SetPlayerMovement(false);
 
         if (currentRoom != null) currentRoom.ToggleWall();
         else previousCameraPosition = cmCamera.transform.position;
@@ -68,7 +64,7 @@ public class CameraManager : MonoBehaviour
             GetCurve(out Vector3 result, p0, p1, p2, t);
             cmCamera.transform.position = result;
         }).OnComplete(() => {
-            PlayerManager.playerMovementEnabled = true;
+            GameManager.SetPlayerMovement(true);
             buildingReached?.Invoke();
         });
     }
