@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     private Vector3 targetPosition;
 
     public event Action<Enemy> hasDied;
+    public static event Action EnemyKilled;
 
     virtual protected void Start() {
         targetPosition = GameObject.FindGameObjectWithTag("PlayerBuilding").transform.position;
@@ -47,7 +48,7 @@ public class Enemy : MonoBehaviour
 
     virtual public bool TakeDamage(float damage) {
         health -= damage;
-        if (health <= 0) {Destroy(); hasDied?.Invoke(this); return true;}
+        if (health <= 0) {Destroy(); hasDied?.Invoke(this); EnemyKilled?.Invoke(); return true;}
         return false;
     }
 

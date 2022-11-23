@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Window : MonoBehaviour
@@ -41,7 +39,7 @@ public class Window : MonoBehaviour
     }
 
     public void Reload() {
-        nextFire = Time.time + pewman.windowFireRate;
+        nextFire = Time.time + GameManager.windowFireRate;
         inQueue = false;
     }
 

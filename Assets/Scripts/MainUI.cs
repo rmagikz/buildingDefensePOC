@@ -4,11 +4,14 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class MainUI : MonoBehaviour
 {
     [SerializeField] private WorldSpaceUIManager worldSpaceUIManager;
     [SerializeField] private Button waveButton;
+
+    public TMP_Text waveButtonText;
 
     public static event Action WaveStarted;
 

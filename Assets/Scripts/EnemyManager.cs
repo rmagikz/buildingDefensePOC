@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
 
@@ -9,37 +7,28 @@ public class EnemyManager : MonoBehaviour
 
     public static event Action WaveEnded;
 
-    public float spawnInterval = 1f;
-
-    public bool canSpawn = true;
-
-    public int enemiesToSpawn;
-
     private float timeSinceSpawn = 0f;
     private int enemiesSpawned = 0;
+    private int enemiesKilled = 0;
+
+    void Start() {
+        Enemy.EnemyKilled += () => enemiesKilled++;
+    }
 
     void Update() {
-        if (Time.time > timeSinceSpawn && GameManager.waveInProgress && canSpawn) {
-            if (enemiesSpawned > enemiesToSpawn) {StopSpawning(); return;}
+        if (GameManager.waveInProgress && Time.time > timeSinceSpawn && enemiesSpawned < GameManager.enemiesToSpawn) {
             enemyPool.Spawn();
             enemiesSpawned++;
-            timeSinceSpawn = Time.time + spawnInterval;
+            timeSinceSpawn = Time.time + GameManager.enemySpawnRate;
         }
+
+        if (enemiesKilled == GameManager.enemiesToSpawn) EndWave();
     }
 
-    public void StartSpawning() {
-        canSpawn = true;
-    }
-
-    public void StopSpawning() {
-        canSpawn = false;
+    public void EndWave() {
         enemiesSpawned = 0;
+        enemiesKilled = 0;
         timeSinceSpawn = 0f;
         WaveEnded?.Invoke();
-    }
-
-    public void SetSpawnProperties(int count, float rate = 1f) {
-        enemiesToSpawn = count;
-        spawnInterval = rate;
     }
 }

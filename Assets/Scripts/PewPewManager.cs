@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using System.Linq;
 
 public class PewPewManager : MonoBehaviour
@@ -15,8 +13,6 @@ public class PewPewManager : MonoBehaviour
     public GameObject tracer;
     public ParticleSystem groundImpact;
     public ParticleSystem enemyImpact;
-    public float windowFireRate = 1f;
-    public float firingQueueDelay = 0.5f;
     private float timeSinceFiringQueue = 0f;
 
     public List<GameObject> enemies;
@@ -62,7 +58,7 @@ public class PewPewManager : MonoBehaviour
                 firingQueue.Remove(nearestWindow);
             }
 
-            timeSinceFiringQueue = Time.time + firingQueueDelay;
+            timeSinceFiringQueue = Time.time + GameManager.firingQueueDelay;
         }
     }
 
