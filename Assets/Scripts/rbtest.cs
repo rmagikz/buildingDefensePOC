@@ -33,7 +33,7 @@ public class rbtest : MonoBehaviour
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.A)) {
-            rb.AddForce(force, ForceMode.Impulse);
+            rb.AddForce(force, ForceMode.VelocityChange);
         }
 
         if (Input.GetKeyDown(KeyCode.D)) {

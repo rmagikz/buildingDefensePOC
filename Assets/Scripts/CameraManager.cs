@@ -15,18 +15,21 @@ public class CameraManager : MonoBehaviour
     private Vector3 previousCameraPosition;
     private Room currentRoom = null;
 
-    private Coroutine rotateAroundCoroutine;
-
-    private GameObject anchor1, anchor2;
+    private bool inHelicopter = false;
 
     public Material materialRed;
+
+    public Camera CmCamera { get => cmCamera; set => cmCamera = value; }
 
     public static event Action<Room> roomReached;
     public static event Action buildingReached;
 
     void Start()
     {
-        InputManager.touchSwipe += (touch) => StartCoroutine(RotateAround(touch));
+        InputManager.touchSwipe += (touch) => {
+            if (GameManager.playerMovementEnabled)
+                StartCoroutine(RotateAround(touch));
+        };
     }
 
     
@@ -52,10 +55,19 @@ public class CameraManager : MonoBehaviour
     public void LookAtBuilding() 
     {
         if (currentRoom != null) currentRoom.ToggleWall();
-        else return;
 
         StartCoroutine(BezierMove(previousCameraPosition, building.transform.position, currentRoom.lookAt.position, () => GameManager.SetPlayerMovement(true)));
         currentRoom = null;
+    }
+
+    public void LookAtHelicopter(Action onComplete) {
+        Debug.Log("LOOKING");
+        currentRoom = null;
+
+        Vector3 targetPos = HelicopterManager.HM.heliScript.targetPos.position;
+        Vector3 lookAt = HelicopterManager.HM.heliScript.lookAt.position;
+
+        StartCoroutine(BezierMove(targetPos, lookAt, building.transform.position, onComplete));
     }
 
     private IEnumerator RotateAround(Touch touch) {

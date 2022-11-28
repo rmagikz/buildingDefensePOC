@@ -5,6 +5,10 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] EnemyManager enemyManager;
     [SerializeField] MainUI mainUI;
     [SerializeField] WorldSpaceUIManager worldSpaceUIManager;
+    [SerializeField] CameraManager cameraManager;
+
+
+    [SerializeField] GameObject helicopter;
 
     private UpgradesData upgrades;
 
@@ -17,6 +21,12 @@ public partial class GameManager : MonoBehaviour
         MainUI.WaveStarted += OnWaveStarted; // when player clicks wave button
         EnemyManager.WaveEnded += OnWaveEnded; //all enemies spawned are dead or player lost
         UpgradeUI.UpgradeClicked += OnUpgradeClicked; //an upgrade has been clicked
+    }
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.A)) {
+            HelicopterClicked();
+        }
     }
 
     public static void SetPlayerMovement(bool state) {
@@ -42,6 +52,13 @@ public partial class GameManager : MonoBehaviour
         mainUI.waveButtonText.text = "Wave " + wave.ToString();
         worldSpaceUIManager.ToggleAll();
         IncreaseDifficulty();
+    }
+
+    private void HelicopterClicked() {
+        Debug.Log("HELI");
+        playerMovementEnabled = false;
+        HelicopterManager.HM.SpawnHelicopter();
+        cameraManager.LookAtHelicopter(HelicopterManager.HM.BeginStrafe);
     }
 
     private void OnUpgradeClicked(Upgrade upgrade) {

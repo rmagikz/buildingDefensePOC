@@ -13,6 +13,7 @@ public partial class GameManager {
     public static int enemiesToSpawn { get => UpgradesData.enemiesToSpawn;}
     public static float enemySpawnRate { get => UpgradesData.enemySpawnRate;}
     public static float windowFireRate { get => UpgradesData.windowFireRate;}
+    public static float helicopterFuelTime { get => UpgradesData.helicopterFuelTime;}
     public static int playerCurrency { get => UpgradesData.playerCurrency;}
     public static int wave { get => UpgradesData.wave; }
 
@@ -27,6 +28,7 @@ public partial class GameManager {
         public static float firingQueueDelay = 0.5f;
         public static float enemySpawnRate = 1f;
         public static int enemiesToSpawn = 10;
+        public static float helicopterFuelTime = 10f;
         public static int playerCurrency = 130;
         public static int wave = 1;
     }
