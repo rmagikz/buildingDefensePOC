@@ -17,7 +17,7 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (!GameManager.playerMovementEnabled) return;
+        //if (!GameManager.playerMovementEnabled) return;
         if (Input.touchCount == 1) // GET TOUCH INPUT!!!!
         {
             Touch touch = Input.GetTouch(0);

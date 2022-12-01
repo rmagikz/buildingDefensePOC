@@ -61,7 +61,6 @@ public class CameraManager : MonoBehaviour
     }
 
     public void LookAtHelicopter(Action onComplete) {
-        Debug.Log("LOOKING");
         currentRoom = null;
 
         Vector3 targetPos = HelicopterManager.HM.heliScript.targetPos.position;

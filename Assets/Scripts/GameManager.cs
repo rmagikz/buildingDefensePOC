@@ -55,7 +55,6 @@ public partial class GameManager : MonoBehaviour
     }
 
     private void HelicopterClicked() {
-        Debug.Log("HELI");
         playerMovementEnabled = false;
         HelicopterManager.HM.SpawnHelicopter();
         cameraManager.LookAtHelicopter(HelicopterManager.HM.BeginStrafe);

@@ -28,7 +28,7 @@ public partial class GameManager {
         public static float firingQueueDelay = 0.5f;
         public static float enemySpawnRate = 1f;
         public static int enemiesToSpawn = 10;
-        public static float helicopterFuelTime = 10f;
+        public static float helicopterFuelTime = 30f;
         public static int playerCurrency = 130;
         public static int wave = 1;
     }

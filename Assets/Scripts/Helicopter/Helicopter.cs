@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Helicopter : MonoBehaviour
 {
-    public GameObject minigun, minigunBarrel, mainRotor, rearRotor;
+    public GameObject minigun, minigunBarrel, minigunStand, mainRotor, rearRotor;
     public Transform targetPos, lookAt;
     
     void Start()
