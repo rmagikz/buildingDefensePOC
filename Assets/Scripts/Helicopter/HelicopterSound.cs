@@ -27,4 +27,8 @@ public class HelicopterSound : MonoBehaviour
         synthGain = spin * 0.1f + (1 - spin) * 0.0f;
         synthFrequency = spin * max + (1 - spin) * min;
     }
+
+    public void ResetGain() {
+        synthGain = 0;
+    }
 }

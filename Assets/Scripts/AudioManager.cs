@@ -8,6 +8,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip groundImpactSound;
     public AudioClip enemyImpactSound;
     public AudioClip minigunFire;
+    public AudioClip helicopterRotor;
 
     private AudioSource audioSource;
     private AudioSource oneShotAudioSource;

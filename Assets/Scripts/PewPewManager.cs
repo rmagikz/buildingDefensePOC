@@ -9,10 +9,7 @@ public class PewPewManager : MonoBehaviour
     [SerializeField] private GameObject building;
     
     private Transform[] windows;
-
-    public GameObject tracer;
-    public ParticleSystem groundImpact;
-    public ParticleSystem enemyImpact;
+    
     private float timeSinceFiringQueue = 0f;
 
     public List<GameObject> enemies;

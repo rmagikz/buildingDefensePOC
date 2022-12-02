@@ -53,14 +53,10 @@ public class Window : MonoBehaviour
         {
             Debug.DrawLine(transform.position, currentTarget.transform.position, Color.red, 1f);
             if (hit.transform.tag != "Enemy") {currentTarget = null; Debug.Log("UR MOM TWO"); return;}
-            float distance = Vector3.Distance(transform.position, target);
-            Vector3 spawnPoint = transform.position + direction * distance * 0.5f;
-            GameObject tracerInstance = Instantiate(pewman.tracer, spawnPoint, Quaternion.LookRotation(direction));
-            tracerInstance.transform.localScale = new Vector3(0.005f, 1, distance / 10f);
-            Destroy(tracerInstance, 0.1f);
+            Utils.SpawnTracer(transform.position, target, Effects.Instance.tracer);
             AudioManager.instance.PlayOneShot(AudioManager.instance.gunshotSound);
             hit.transform.gameObject.GetComponent<Enemy>().TakeDamage(5);
-            Instantiate(pewman.enemyImpact, hit.point, Quaternion.identity);
+            Instantiate(Effects.Instance.enemyImpact, hit.point, Quaternion.identity);
             AudioManager.instance.PlayOneShot(AudioManager.instance.enemyImpactSound);
             // Instantiate(pewman.groundImpact, hit.point, Quaternion.identity);
             // AudioManager.instance.PlayOneShot(AudioManager.instance.gunshotSound);

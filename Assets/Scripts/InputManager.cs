@@ -12,13 +12,9 @@ public class InputManager : MonoBehaviour
     public static event Action<Touch> touchUp;
     public static event Action touchMoving;
 
-    private Vector3 fp;   //First touch position
-    private Vector3 lp;   //Last touch position
-
     void Update()
     {
-        //if (!GameManager.playerMovementEnabled) return;
-        if (Input.touchCount == 1) // GET TOUCH INPUT!!!!
+        if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
             if (touch.phase == TouchPhase.Began)

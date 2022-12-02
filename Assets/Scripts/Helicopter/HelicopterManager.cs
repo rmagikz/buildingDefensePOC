@@ -8,19 +8,16 @@ public class HelicopterManager : MonoBehaviour
     [SerializeField] BuildingManager buildingManager;
     [SerializeField] GameObject heliPrefab;
     [SerializeField] HelicopterSound helicopterSound;
-    [SerializeField] GameObject tracer;
 
-    private float rotationSpeed = 2f;
+    private float rotationSpeed = 10f;
     private float flightTime = 0f;
     
     private bool canBegin = false;
     private bool spinDown = true;
+    private bool touchDown = false;
     private float spin = 0.1f;
-    private float fireRate = 0.1f;
-    private float timeSinceFire = 0;
-
-    private Ray touchRay;
-    private RaycastHit rayHit;
+    private float fireRate = 0f;
+    private float timeSinceFire = 0.1f;
 
     public static HelicopterManager HM;
 
@@ -36,14 +33,10 @@ public class HelicopterManager : MonoBehaviour
     {
         if (!canBegin) return;
 
-        if (spinDown) {
-            spin -= Time.deltaTime;
-            if (spin <= 0.1f) spin = 0.1f;
-        } else {
-            spin += Time.deltaTime;
-            if (spin >= 1f) spin = 1f;
-        }
+        UpdateSpin();
         helicopterSound.minigunSpin(spin, 200, 500);
+
+        if (touchDown) Fire();
 
         if (Time.time < flightTime) {
             heliGO.transform.RotateAround(buildingManager.BuildingPosition, Vector3.up, rotationSpeed * Time.deltaTime);
@@ -62,7 +55,7 @@ public class HelicopterManager : MonoBehaviour
     }
 
     public void BeginStrafe() {
-        InputManager.touchSwipe += HandleTouchDown;
+        InputManager.touchDown += HandleTouchDown;
         InputManager.touchUp += HandleTouchUp;
         canBegin = true;
         heliScript.minigunStand.SetActive(false);
@@ -71,44 +64,69 @@ public class HelicopterManager : MonoBehaviour
     }
 
     public void EndStrafe() {
-        InputManager.touchSwipe -= HandleTouchDown;
+        InputManager.touchDown -= HandleTouchDown;
         InputManager.touchUp -= HandleTouchUp;
         GameManager.SetPlayerMovement(true);
+        AudioManager.instance.StopClip();
+        helicopterSound.ResetGain();
         canBegin = false;
+        spinDown = true;
+        touchDown = false;
         flightTime = 0f;
         Destroy(heliGO);
     }
 
     private void HandleTouchDown(Touch touch) {
-        touchRay = cameraManager.CmCamera.ScreenPointToRay(touch.position);
-        Physics.Raycast(touchRay, out rayHit);
-        heliScript.minigun.transform.LookAt(rayHit.point);
-        Fire();
+        touchDown = true;
     }
 
     private void HandleTouchUp(Touch touch) {
+        touchDown = false;
         spinDown = true;
         AudioManager.instance.StopClip();
     }
 
     private void Fire() {
-        if (SpinUp()) {
-            Debug.Log("YEET");
+        Vector3 touchRayDirection = cameraManager.CmCamera.ScreenPointToRay(Input.mousePosition).direction;
+
+        Physics.Raycast(cameraManager.CmCamera.transform.position, touchRayDirection, out RaycastHit rayHit);
+        heliScript.minigun.transform.LookAt(rayHit.point);
+
+        if (IsSpunUp()) {
+            float random() => Random.Range(-0.01f, 0.01f);
+            Vector3 finalDirection = touchRayDirection + new Vector3(random(),random(),random());
+            Physics.Raycast(cameraManager.CmCamera.transform.position, finalDirection, out RaycastHit shotHit);
+
             AudioManager.instance.PlayClip(AudioManager.instance.minigunFire, 0.1f);
+
             if (Time.time > timeSinceFire) {
-                float distance = Vector3.Distance(rayHit.point, heliScript.minigunBarrel.transform.position);
-                Vector3 tracerSpawnPoint = heliScript.minigunBarrel.transform.position + touchRay.direction * distance/2f;
-                GameObject tracerInstance = GameObject.Instantiate(tracer, tracerSpawnPoint, Quaternion.LookRotation(touchRay.direction));
-                tracerInstance.transform.localScale = new Vector3(0.005f, 1, distance / 10f);
-                Destroy(tracerInstance, 0.1f);
+                if (shotHit.transform != null) {
+                    if (shotHit.transform.tag == "Enemy") {
+                        Enemy enemy = shotHit.transform.GetComponent<Enemy>();
+                        Utils.SpawnImpact(Effects.Instance.enemyImpact, shotHit.point);
+                        enemy.TakeDamage(1);
+                    } else Utils.SpawnImpact(Effects.Instance.groundImpact, shotHit.point);
+                    Vector3 offsetPos = heliScript.minigunBarrel.transform.position + (new Vector3(random(), random(), 0) * 5);
+                    Utils.SpawnTracer(offsetPos, shotHit.point, Effects.Instance.tracer, 0.01f);
+                }
                 timeSinceFire = Time.time + fireRate;
             }
         }
     }
 
-    private bool SpinUp() {
+    private bool IsSpunUp() {
         spinDown = false;
         if (spin >= 1f) return true;
         return false;
+    }
+
+    private void UpdateSpin() {
+        if (spinDown) {
+            spin -= Time.deltaTime;
+            if (spin <= 0.1f) spin = 0.1f;
+        } else {
+            spin += Time.deltaTime;
+            if (spin >= 1f) spin = 1f;
+        }
     }
 }
