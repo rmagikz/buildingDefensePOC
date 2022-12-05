@@ -52,6 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c43f7fef5b48845b61fa67a1cf8e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 2732863697378666260}
   minigun: {fileID: 8225964993449739456}
   minigunBarrel: {fileID: 1374632809931609415}
   minigunStand: {fileID: 1605460416981252831}

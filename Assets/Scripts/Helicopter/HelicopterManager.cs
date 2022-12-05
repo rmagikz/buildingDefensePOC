@@ -34,7 +34,7 @@ public class HelicopterManager : MonoBehaviour
         if (!canBegin) return;
 
         UpdateSpin();
-        helicopterSound.minigunSpin(spin, 200, 500);
+        helicopterSound.AdjustPitch(spin, 0.1f, 2);
 
         if (touchDown) Fire();
 
@@ -61,6 +61,8 @@ public class HelicopterManager : MonoBehaviour
         heliScript.minigunStand.SetActive(false);
         heliScript.minigun.transform.position -= new Vector3(0,0.3f,0.1f);
         flightTime = Time.time + GameManager.helicopterFuelTime;
+        heliScript.FadeInVolume();
+        helicopterSound.Play();
     }
 
     public void EndStrafe() {
@@ -68,7 +70,7 @@ public class HelicopterManager : MonoBehaviour
         InputManager.touchUp -= HandleTouchUp;
         GameManager.SetPlayerMovement(true);
         AudioManager.instance.StopClip();
-        helicopterSound.ResetGain();
+        helicopterSound.Stop();
         canBegin = false;
         spinDown = true;
         touchDown = false;
