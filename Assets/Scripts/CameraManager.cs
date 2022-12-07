@@ -42,7 +42,7 @@ public class CameraManager : MonoBehaviour
             cmCamera.transform.LookAt(building.transform);
     }
 
-    public void LookAtRoom(Room room, Action OnComplete) 
+    public void LookAtRoom(Room room, Action OnComplete = null) 
     {
         GameManager.SetPlayerMovement(false);
 
@@ -51,23 +51,23 @@ public class CameraManager : MonoBehaviour
 
         currentRoom = room;
 
-        Cutscenes.SetCallback(1f, () => OnComplete?.Invoke());
+        Cutscenes.SetCallback(1f, OnComplete);
         Cutscenes.StartCutscene(room.targetPos.position, room.lookAt.position, building.transform.position);
 
         room.ToggleWall();
     }
 
-    public void LookAtBuilding() 
+    public void LookAtBuilding(Action OnComplete = null) 
     {
         if (currentRoom != null) currentRoom.ToggleWall();
 
-        Cutscenes.SetCallback(1f, () => GameManager.SetPlayerMovement(true));
+        Cutscenes.SetCallback(1f, () => {GameManager.SetPlayerMovement(true); OnComplete?.Invoke();});
         Cutscenes.StartCutscene(previousCameraPosition, building.transform.position, currentRoom.lookAt.position);
 
         currentRoom = null;
     }
 
-    public void LookAtHelicopter(Action onComplete) {
+    public void LookAtHelicopter(Action onComplete = null) {
         currentRoom = null;
 
         Vector3 targetPos = HelicopterManager.HM.heliScript.targetPos.position;

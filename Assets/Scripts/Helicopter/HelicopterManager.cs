@@ -7,7 +7,6 @@ public class HelicopterManager : MonoBehaviour
     [SerializeField] CameraManager cameraManager;
     [SerializeField] BuildingManager buildingManager;
     [SerializeField] GameObject heliPrefab;
-    [SerializeField] HelicopterSound helicopterSound;
 
     private float rotationSpeed = 10f;
     private float flightTime = 0f;
@@ -34,7 +33,7 @@ public class HelicopterManager : MonoBehaviour
         if (!canBegin) return;
 
         UpdateSpin();
-        helicopterSound.AdjustPitch(spin, 0.1f, 2);
+        SoundManager.Instance.LerpPitch(ClipName.MinigunSpin, spin, 0.1f, 2f);
 
         if (touchDown) Fire();
 
@@ -61,16 +60,18 @@ public class HelicopterManager : MonoBehaviour
         heliScript.minigunStand.SetActive(false);
         heliScript.minigun.transform.position -= new Vector3(0,0.3f,0.1f);
         flightTime = Time.time + GameManager.helicopterFuelTime;
-        heliScript.FadeInVolume();
-        helicopterSound.Play();
+        SoundManager.Instance.PlaySound(ClipName.HelicopterRotor);
+        SoundManager.Instance.FadeInVolume(ClipName.HelicopterRotor, 1f, 0.5f);
+        SoundManager.Instance.PlaySound(ClipName.MinigunSpin);
     }
 
     public void EndStrafe() {
         InputManager.touchDown -= HandleTouchDown;
         InputManager.touchUp -= HandleTouchUp;
         GameManager.SetPlayerMovement(true);
-        AudioManager.instance.StopClip();
-        helicopterSound.Stop();
+        SoundManager.Instance.StopSound(ClipName.MinigunBurst);
+        SoundManager.Instance.StopSound(ClipName.MinigunSpin);
+        SoundManager.Instance.StopSound(ClipName.HelicopterRotor);
         canBegin = false;
         spinDown = true;
         touchDown = false;
@@ -85,7 +86,7 @@ public class HelicopterManager : MonoBehaviour
     private void HandleTouchUp(Touch touch) {
         touchDown = false;
         spinDown = true;
-        AudioManager.instance.StopClip();
+        SoundManager.Instance.StopSound(ClipName.MinigunBurst);
     }
 
     private void Fire() {
@@ -99,7 +100,7 @@ public class HelicopterManager : MonoBehaviour
             Vector3 finalDirection = touchRayDirection + new Vector3(random(),random(),random());
             Physics.Raycast(cameraManager.CmCamera.transform.position, finalDirection, out RaycastHit shotHit);
 
-            AudioManager.instance.PlayClip(AudioManager.instance.minigunFire, 0.1f);
+            SoundManager.Instance.PlaySound(ClipName.MinigunBurst);
 
             if (Time.time > timeSinceFire) {
                 if (shotHit.transform != null) {

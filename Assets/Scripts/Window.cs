@@ -54,12 +54,11 @@ public class Window : MonoBehaviour
             Debug.DrawLine(transform.position, currentTarget.transform.position, Color.red, 1f);
             if (hit.transform.tag != "Enemy") {currentTarget = null; Debug.Log("UR MOM TWO"); return;}
             Utils.SpawnTracer(transform.position, target, Effects.Instance.tracer);
-            AudioManager.instance.PlayOneShot(AudioManager.instance.gunshotSound);
+            SoundManager.Instance.PlayEffect(ClipName.RifleShot);
             hit.transform.gameObject.GetComponent<Enemy>().TakeDamage(5);
             Instantiate(Effects.Instance.enemyImpact, hit.point, Quaternion.identity);
-            AudioManager.instance.PlayOneShot(AudioManager.instance.enemyImpactSound);
+            SoundManager.Instance.PlayEffect(ClipName.BulletImpactFlesh);
             // Instantiate(pewman.groundImpact, hit.point, Quaternion.identity);
-            // AudioManager.instance.PlayOneShot(AudioManager.instance.gunshotSound);
             Reload();
         }
     }

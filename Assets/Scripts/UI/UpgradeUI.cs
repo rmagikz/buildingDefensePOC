@@ -55,9 +55,10 @@ public class UpgradeUI : MonoBehaviour
 
     private void BackClicked() {
         Toggle();
-        worldSpaceUIManager.ToggleAll();
-        cameraManager.LookAtBuilding();
-        mainUI.Toggle();
+        cameraManager.LookAtBuilding(() => {
+            worldSpaceUIManager.ToggleAll();
+            mainUI.Toggle();
+        });
     }
 
     private void Upgrade1Clicked() {
