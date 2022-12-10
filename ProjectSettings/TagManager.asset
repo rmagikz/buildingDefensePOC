@@ -7,6 +7,8 @@ TagManager:
   - PlayerBuilding
   - Floor2Room1
   - Enemy
+  - Ground
+  - Pod
   layers:
   - Default
   - TransparentFX
@@ -14,8 +16,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - pod
+  - ground
   - 
   - 
   - 

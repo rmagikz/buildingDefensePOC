@@ -9,6 +9,7 @@ using TMPro;
 public class MainUI : MonoBehaviour
 {
     [SerializeField] private WorldSpaceUIManager worldSpaceUIManager;
+    [SerializeField] private GameUI gameUI;
     [SerializeField] private Button waveButton;
 
     public TMP_Text waveButtonText;
@@ -16,6 +17,7 @@ public class MainUI : MonoBehaviour
     public static event Action WaveStarted;
 
     void Start() {
+        EnemyManager.WaveEnded += OnWaveEnded;
         waveButton.onClick.AddListener(StartWave);
         Toggle();
     }
@@ -33,7 +35,13 @@ public class MainUI : MonoBehaviour
     private void StartWave() {
         Toggle();
         worldSpaceUIManager.ToggleAll();
+        gameUI.Toggle();
         WaveStarted?.Invoke();
+    }
+
+    private void OnWaveEnded() {
+        Toggle();
+        waveButtonText.text = "Wave " + GameManager.wave.ToString();
     }
 }
 

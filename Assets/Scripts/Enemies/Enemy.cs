@@ -12,6 +12,7 @@ public class Enemy : MonoBehaviour
     public float health = 10;
 
     public int targetedCount = 0;
+    public bool canBeTargeted = false;
 
     private Vector3 targetPosition;
 
@@ -27,13 +28,12 @@ public class Enemy : MonoBehaviour
         targetedCount = 0;
         ShowAsPriority(false);
 
-        float radius = UnityEngine.Random.Range(30f,40f);
+        float radius = UnityEngine.Random.Range(10f,35f);
         float theta = UnityEngine.Random.Range(0f, Mathf.PI*2);
         float x = radius * Mathf.Cos(theta);
         float y = radius * Mathf.Sin(theta);
 
-        transform.position = new Vector3(x, 0, y);
-
+        transform.position = new Vector3(x,0,y);
         transform.LookAt(targetPosition);
     }
 

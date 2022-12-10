@@ -3,7 +3,6 @@ using UnityEngine;
 public partial class GameManager : MonoBehaviour
 {
     [SerializeField] EnemyManager enemyManager;
-    [SerializeField] MainUI mainUI;
     [SerializeField] WorldSpaceUIManager worldSpaceUIManager;
     [SerializeField] CameraManager cameraManager;
 
@@ -17,10 +16,13 @@ public partial class GameManager : MonoBehaviour
 
     void Start() {
         CheckSaves();
+        SoundManager.Instance.PlaySound(ClipName.MenuMusic);
+        SoundManager.Instance.FadeVolume(ClipName.MenuMusic, 0, 1f, 1f);
 
         MainUI.WaveStarted += OnWaveStarted; // when player clicks wave button
         EnemyManager.WaveEnded += OnWaveEnded; //all enemies spawned are dead or player lost
         UpgradeUI.UpgradeClicked += OnUpgradeClicked; //an upgrade has been clicked
+        GameUI.HelicopterStarted += HelicopterClicked;
     }
 
     void Update() {
@@ -43,13 +45,13 @@ public partial class GameManager : MonoBehaviour
 
     private void OnWaveStarted() {
         waveInProgress = true;
+        SoundManager.Instance.FadeTracks(ClipName.MenuMusic, ClipName.GameplayMusic, 2f);
     }
 
     private void OnWaveEnded() {
+        SoundManager.Instance.FadeTracks(ClipName.GameplayMusic, ClipName.MenuMusic, 2f);
         UpgradesData.wave++;
         waveInProgress = false;
-        mainUI.Toggle();
-        mainUI.waveButtonText.text = "Wave " + wave.ToString();
         worldSpaceUIManager.ToggleAll();
         IncreaseDifficulty();
     }

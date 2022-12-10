@@ -37,7 +37,7 @@ public class HelicopterManager : MonoBehaviour
 
         if (touchDown) Fire();
 
-        if (Time.time < flightTime) {
+        if (Time.time < flightTime && GameManager.waveInProgress) {
             heliGO.transform.RotateAround(buildingManager.BuildingPosition, Vector3.up, rotationSpeed * Time.deltaTime);
             heliScript.minigunBarrel.transform.eulerAngles += new Vector3(0,0,spin*2);
             cameraManager.CmCamera.transform.position = heliScript.targetPos.position;
@@ -61,7 +61,7 @@ public class HelicopterManager : MonoBehaviour
         heliScript.minigun.transform.position -= new Vector3(0,0.3f,0.1f);
         flightTime = Time.time + GameManager.helicopterFuelTime;
         SoundManager.Instance.PlaySound(ClipName.HelicopterRotor);
-        SoundManager.Instance.FadeInVolume(ClipName.HelicopterRotor, 1f, 0.5f);
+        SoundManager.Instance.FadeVolume(ClipName.HelicopterRotor, 0f, 1f, 0.5f);
         SoundManager.Instance.PlaySound(ClipName.MinigunSpin);
     }
 

@@ -74,7 +74,7 @@ public class Window : MonoBehaviour
                 Vector3 target = pewman.enemies[i].transform.position + new Vector3(0,1,0);
                 Vector3 direction = (target - transform.position).normalized;
                 if (Physics.Raycast(transform.position, direction, out RaycastHit hit)) {
-                    if (hit.transform.tag == "Enemy") {
+                    if (hit.transform.tag == "Enemy" && hit.transform.GetComponent<Enemy>().canBeTargeted == true) {
                         smallestDistance = currentDistance;
                         targetDistance = currentDistance;
                         nearestTarget = pewman.enemies[i];

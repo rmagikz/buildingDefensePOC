@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ClipType {SoundEffect, SoundClip};
-public enum ClipName {MinigunSpin, RifleShot, HelicopterRotor, MinigunBurst, BulletImpactFlesh, BulletImpactGround};
+public enum ClipName {MinigunSpin, RifleShot, HelicopterRotor, MinigunBurst, BulletImpactFlesh, BulletImpactGround, MenuMusic, GameplayMusic};
 
 [System.Serializable]
 public class Sound
